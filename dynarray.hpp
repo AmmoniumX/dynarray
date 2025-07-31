@@ -1,3 +1,5 @@
+#pragma once
+
 #include <memory>
 #include <stdexcept>
 #include <algorithm>
@@ -12,7 +14,9 @@ public:
     DynArray() = delete;
 
     explicit DynArray(const std::size_t size) 
-        : data_(std::make_unique<T[]>(size)), size_(size) {}
+        : data_(std::make_unique<T[]>(size)), size_(size) {
+        if (size == 0) throw std::runtime_error("Invalid size!");
+    }
 
     DynArray(const T* const other, const std::size_t size) 
         : data_(std::make_unique<T[]>(size)), size_(size) {
