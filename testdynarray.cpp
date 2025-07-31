@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <print>
+#include <stdexcept>
 
 #include "dynarray.hpp"
 
@@ -28,6 +29,14 @@ int main() {
 
   DynArray<int> dyn3({11, 12, 13, 14, 15});
   printdyn(dyn3);
+
+  DynArray<int> dyn4({0, 1, 2});
+  try {
+    [[maybe_unused]] int _ = dyn4.at(3);
+    throw std::runtime_error("Uncaught unsafe access!");
+  } catch (std::out_of_range& ex) {
+    std::println("Caught unsafe access! ({})", ex.what());
+  }
 
   return EXIT_SUCCESS;
 }

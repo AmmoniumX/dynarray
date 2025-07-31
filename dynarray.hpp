@@ -1,6 +1,7 @@
 #include <memory>
 #include <stdexcept>
 #include <algorithm>
+#include <format>
 
 template<typename T>
 class DynArray {
@@ -49,13 +50,23 @@ public:
         return *this;
     }
 
+    // Element access methods: make operator[] unchecked and at() checked (like std::vector)
     T& operator[](std::size_t index) {
-        if (index >= size_) throw std::out_of_range("Index out of bounds");
         return data_[index];
     }
 
     const T& operator[](std::size_t index) const {
-        if (index >= size_) throw std::out_of_range("Index out of bounds");
+        return data_[index];
+    }
+
+    
+    T& at(std::size_t index) {
+        if (index >= size_) throw std::out_of_range(std::format("Index out of bounds: {} not in [0, {}]", index, size_-1));
+        return data_[index];
+    }
+
+    const T& at(std::size_t index) const {
+        if (index >= size_) throw std::out_of_range(std::format("Index out of bounds: {} not in [0, {}]", index, size_-1));
         return data_[index];
     }
 
