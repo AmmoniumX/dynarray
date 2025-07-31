@@ -1,6 +1,5 @@
 #include "dynarray.hpp"
 #include "test.hpp"
-#include <string>
 #include <vector>
 
 void test_size_constructor() {
