@@ -1,6 +1,7 @@
 #include "dynarray.hpp"
 #include "test.hpp"
 #include <vector>
+#include <span>
 
 void test_size_constructor() {
   DynArray<int> arr(5);
@@ -113,6 +114,18 @@ void test_zero_size_constructor() {
   ASSERT_THROW(([] { DynArray<int> arr(0); }()), std::runtime_error);
 }
 
+void test_span() {
+  DynArray<int> dyn({1, 2, 3, 4, 5});
+
+  std::span<int> s = dyn.span();
+  
+  int i = 1;
+  for (int& j : s) {
+    ASSERT_EQ(i, j);
+    i++;
+  }
+}
+
 int main() {
   run_test(test_size_constructor, "Size constructor");
   run_test(test_pointer_constructor, "Pointer constructor");
@@ -127,6 +140,7 @@ int main() {
   run_test(test_const_iterators, "Const iterators");
   run_test(test_data, "data()");
   run_test(test_zero_size_constructor, "Zero size constructor");
+  run_test(test_span, "Span method");
 
   return EXIT_SUCCESS;
 }

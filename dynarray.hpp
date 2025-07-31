@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <format>
+#include <span>
 
 template<typename T>
 class DynArray {
@@ -87,4 +88,8 @@ public:
     
     const T* cbegin() const { return data_.get(); }
     const T* cend()   const { return data_.get() + size_; }
+
+    std::span<T> span() { return { data_.get(), size_ }; }
+    std::span<const T> span() const { return { data_.get(), size_ }; }
+    std::span<const T> cspan() const { return { data_.get(), size_ }; }
 };
