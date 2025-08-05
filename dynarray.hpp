@@ -16,11 +16,11 @@ public:
 
     explicit DynArray(const std::size_t size) 
         : data_(std::make_unique<T[]>(size)), size_(size) {
-        if (size == 0) throw std::runtime_error("Invalid size!");
     }
 
     DynArray(const T* const other, const std::size_t size) 
         : data_(std::make_unique<T[]>(size)), size_(size) {
+        if (!other && size > 0) { throw std::runtime_error("Invalid pointer"); }
         std::copy(other, other + size, data_.get());
     }
 
@@ -34,10 +34,18 @@ public:
         std::copy(other.data_.get(), other.data_.get() + size_, data_.get());
     }
 
+    DynArray(const std::span<const T>& sp) 
+        : data_(std::make_unique<T[]>(sp.size())), size_(sp.size()) {
+        std::copy(sp.begin(), sp.end(), data_.get());
+    }
+
     DynArray& operator=(const DynArray& other) {
         if (this == &other) return *this;
-        data_ = std::make_unique<T[]>(other.size_);
-        size_ = other.size_;
+        // reuse array if possible to avoid extra allocations
+        if (size_ != other.size_) {
+            data_ = std::make_unique<T[]>(other.size_);
+            size_ = other.size_;
+        }
         std::copy(other.data_.get(), other.data_.get() + size_, data_.get());
         return *this;
     }
@@ -54,6 +62,8 @@ public:
         other.size_ = 0;
         return *this;
     }
+
+    ~DynArray() = default;
 
     // Element access methods: make operator[] unchecked and at() checked (like std::vector)
     T& operator[](std::size_t index) {

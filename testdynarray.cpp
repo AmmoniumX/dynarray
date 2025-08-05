@@ -1,5 +1,7 @@
 #include "dynarray.hpp"
 #include "test.hpp"
+#include <array>
+#include <spanstream>
 #include <vector>
 #include <span>
 
@@ -110,11 +112,7 @@ void test_data() {
   ASSERT_EQ(arr[1], 10);
 }
 
-void test_zero_size_constructor() {
-  ASSERT_THROW(([] { DynArray<int> arr(0); }()), std::runtime_error);
-}
-
-void test_span() {
+void test_span_view() {
   DynArray<int> dyn({1, 2, 3, 4, 5});
 
   std::span<int> s = dyn.span();
@@ -126,21 +124,33 @@ void test_span() {
   }
 }
 
-int main() {
-  run_test(test_size_constructor, "Size constructor");
-  run_test(test_pointer_constructor, "Pointer constructor");
-  run_test(test_initializer_list_constructor, "Initializer list constructor");
-  run_test(test_copy_constructor, "Copy constructor");
-  run_test(test_move_constructor, "Move constructor");
-  run_test(test_copy_assignment, "Copy assignment");
-  run_test(test_move_assignment, "Move assignment");
-  run_test(test_at_operator, "at() operator");
-  run_test(test_bracket_operator, "[] operator");
-  run_test(test_iterators, "Iterators");
-  run_test(test_const_iterators, "Const iterators");
-  run_test(test_data, "data()");
-  run_test(test_zero_size_constructor, "Zero size constructor");
-  run_test(test_span, "Span method");
+void test_span_constructor() {
+    std::array<int, 5> arr({1, 2, 3, 4, 5});
+    std::span<int> sp = std::span(arr);
+    DynArray<int> dyn(sp);
 
-  return EXIT_SUCCESS;
+    int i = 1;
+    for (int& j : dyn) {
+      ASSERT_EQ(i, j);
+      i++;
+    }
+}
+
+int main() {
+    run_test(test_size_constructor, "Size constructor");
+    run_test(test_pointer_constructor, "Pointer constructor");
+    run_test(test_initializer_list_constructor, "Initializer list constructor");
+    run_test(test_copy_constructor, "Copy constructor");
+    run_test(test_move_constructor, "Move constructor");
+    run_test(test_copy_assignment, "Copy assignment");
+    run_test(test_move_assignment, "Move assignment");
+    run_test(test_at_operator, "at() operator");
+    run_test(test_bracket_operator, "[] operator");
+    run_test(test_iterators, "Iterators");
+    run_test(test_const_iterators, "Const iterators");
+    run_test(test_data, "data()");
+    run_test(test_span_view, "Span view method");
+    run_test(test_span_constructor, "Span constructor");
+
+    return EXIT_SUCCESS;
 }
